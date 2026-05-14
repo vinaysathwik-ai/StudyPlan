@@ -112,7 +112,7 @@ feat: ai automatically adds tasks to the dates
 > git push origin main
 >
 > # Step 2 — Then create your feature branch
-> git checkout -b your-feature/issue-name
+> git checkout -b your-feature-name
 > ```
 
 1. **One PR = One Purpose**: fix one bug, add one feature, or improve documentation.
