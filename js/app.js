@@ -535,7 +535,7 @@ function renderTasks() {
             </select>
 
             <label style="display:block; font-size:10px; font-weight:700; color:var(--color-text-tertiary); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:4px;">Task Name</label>
-            <input class="board-edit-title edit-field" type="text" value="${t.title}" style="width:100%; margin-bottom: 12px; font-size:13px; font-weight:600; padding:6px; border: 1px solid var(--color-border-secondary); border-radius: 4px; background: var(--color-background-primary); color: var(--color-text-primary);">
+            <input class="board-edit-title edit-field" type="text" value="${t.title}${t.labels && t.labels.length > 0 ? ' #' + t.labels.join(' #') : ''}" style="width:100%; margin-bottom: 12px; font-size:13px; font-weight:600; padding:6px; border: 1px solid var(--color-border-secondary); border-radius: 4px; background: var(--color-background-primary); color: var(--color-text-primary);">
 
             <label style="display:block; font-size:10px; font-weight:700; color:var(--color-text-tertiary); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:4px;">Deadline</label>
             <input class="board-edit-date edit-field" type="datetime-local" value="${localDate}" style="width:100%; margin-bottom: 12px; font-size:12px; padding:6px; border: 1px solid var(--color-border-secondary); border-radius: 4px; background: var(--color-background-primary); color: var(--color-text-primary);">
@@ -1099,7 +1099,11 @@ newTaskSave.addEventListener('click', async () => {
 
 addItemsBtn.addEventListener('click', () => {
   if (store.currentPaste) {
-    store.addTasks(store.currentPaste);
+    const pasteWithLabels = store.currentPaste.map(t => {
+      const { cleanTitle, labels } = extractLabels(t.title);
+      return { ...t, title: cleanTitle || t.title, labels };
+    });
+    store.addTasks(pasteWithLabels);
     store.clearExtracted();
     pasteInput.value = '';
   }
@@ -1124,14 +1128,6 @@ extractBtn.addEventListener('click', async () => {
 clearBtn.addEventListener('click', () => {
   pasteInput.value = '';
   store.clearExtracted();
-});
-
-addItemsBtn.addEventListener('click', () => {
-  if (store.currentPaste) {
-    store.addTasks(store.currentPaste);
-    store.clearExtracted();
-    pasteInput.value = '';
-  }
 });
 
 downloadBtn.addEventListener('click', () => {

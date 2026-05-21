@@ -177,10 +177,21 @@ function nlpTaskScore(seg) {
 }
 
 function nlpCleanTitle(seg) {
-  return seg
+  const labelMatch = seg.match(/#[\w-]+/g);
+  let cleaned = seg
     .replace(/^(please|kindly|remember to|don't forget to|make sure to)\s+/i, '')
     .replace(/\s+(by|before|due|on|at)\s+.*/i, '')
     .trim().substring(0, 80);
+    
+  if (labelMatch) {
+    // Re-append labels so frontend can still extract them
+    labelMatch.forEach(l => {
+      if (!cleaned.includes(l)) {
+        cleaned += ' ' + l;
+      }
+    });
+  }
+  return cleaned;
 }
 
 function nlpFallbackDate() {
@@ -430,6 +441,7 @@ app.post('/api/extract', async (req, res) => {
 You are an AI study planner assistant. Extract ALL tasks and deadlines from the text below.
 Return ONLY a raw JSON array (no markdown, no backticks, no explanation).
 Each object must have: title (string), subject_name (string), due_at (ISO 8601 datetime), notes (string), confidence_score (number 0-100), priority ("low"|"medium"|"high"), icon (emoji).
+IMPORTANT: Do not strip hashtags from the task description! If the original text contains hashtag labels (e.g. #urgent, #Group), you MUST include them at the end of the 'title' field (e.g. 'Read chapter 1 #urgent').
 
 Text: "${text}"
 `;
