@@ -159,6 +159,11 @@
 
       <!-- Focus Mode -->
       <div id="focus-section" class="focus-section hidden">
+        <div id="focus-warning-banner" class="focus-warning-banner hidden">
+          <span class="warning-banner-icon">⚠</span>
+          <span class="warning-banner-text">Focus lost! Please stay on this screen to complete your session.</span>
+          <button id="focus-warning-close" class="warning-banner-close" aria-label="Close warning">&times;</button>
+        </div>
         <div class="focus-dashboard">
           <div class="timer-container">
             <svg class="timer-svg" viewBox="0 0 100 100">
@@ -172,10 +177,30 @@
             </svg>
             <div id="timer-text" class="timer-text">25:00</div>
           </div>
+          
+          <div id="focus-stats-row" class="focus-stats-row hidden">
+            <span class="focus-stat-label">⚠ Interruptions:</span>
+            <span id="interruption-count" class="focus-stat-value">0</span>
+          </div>
+
           <div class="timer-duration-row">
             <label for="timer-duration-input" class="timer-duration-label">Duration (min)</label>
             <input id="timer-duration-input" type="number" class="timer-duration-input" value="25" min="1" max="120">
           </div>
+
+          <div class="focus-options-row">
+            <label class="focus-option-toggle">
+              <input type="checkbox" id="enable-focus-protection" checked>
+              <span>Track Interruptions</span>
+            </label>
+            <button id="fullscreen-toggle-btn" class="btn" type="button">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+              </svg>
+              <span>Fullscreen</span>
+            </button>
+          </div>
+
           <div class="timer-controls">
             <button id="timer-start-btn" class="btn btn-primary">Start Focus</button>
             <button id="timer-pause-btn" class="btn hidden">Pause</button>

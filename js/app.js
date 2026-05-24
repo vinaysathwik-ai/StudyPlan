@@ -181,6 +181,74 @@ const timerStartBtn = document.getElementById('timer-start-btn');
 const timerPauseBtn = document.getElementById('timer-pause-btn');
 const timerResetBtn = document.getElementById('timer-reset-btn');
 
+// Focus Protection elements
+const enableFocusProtectionInput = document.getElementById('enable-focus-protection');
+const fullscreenToggleBtn = document.getElementById('fullscreen-toggle-btn');
+const focusStatsRow = document.getElementById('focus-stats-row');
+const interruptionCountEl = document.getElementById('interruption-count');
+const focusWarningBanner = document.getElementById('focus-warning-banner');
+const focusWarningClose = document.getElementById('focus-warning-close');
+
+// Focus Protection state & helper functions
+let focusProtectionActive = false;
+let interruptionsCount = 0;
+let lastFocusLossTime = 0;
+
+function handleFocusLoss() {
+  if (!focusProtectionActive) return;
+  const now = Date.now();
+  if (now - lastFocusLossTime < 1000) return;
+  lastFocusLossTime = now;
+
+  interruptionsCount++;
+  if (interruptionCountEl) {
+    interruptionCountEl.textContent = interruptionsCount;
+  }
+  if (focusWarningBanner) {
+    focusWarningBanner.classList.remove('hidden');
+  }
+  Toast.show('Focus lost! Please stay on this screen to complete your session.', 'warning');
+}
+
+function activateFocusTracking() {
+  if (focusProtectionActive) return;
+  focusProtectionActive = true;
+  interruptionsCount = 0;
+  if (interruptionCountEl) interruptionCountEl.textContent = '0';
+  if (focusStatsRow) focusStatsRow.classList.remove('hidden');
+  if (focusWarningBanner) focusWarningBanner.classList.add('hidden');
+
+  document.addEventListener('visibilitychange', handleFocusLoss);
+  window.addEventListener('blur', handleFocusLoss);
+}
+
+function cleanupFocusTracking() {
+  if (!focusProtectionActive) return;
+  focusProtectionActive = false;
+  document.removeEventListener('visibilitychange', handleFocusLoss);
+  window.removeEventListener('blur', handleFocusLoss);
+
+  if (focusWarningBanner) focusWarningBanner.classList.add('hidden');
+  if (focusStatsRow) focusStatsRow.classList.add('hidden');
+
+  if (document.fullscreenElement) {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    }
+  }
+}
+
+function toggleFullscreen() {
+  const section = document.getElementById('focus-section');
+  if (!document.fullscreenElement) {
+    if (section.requestFullscreen) section.requestFullscreen();
+    else if (section.webkitRequestFullscreen) section.webkitRequestFullscreen();
+    else if (section.msRequestFullscreen) section.msRequestFullscreen();
+  } else {
+    if (document.exitFullscreen) document.exitFullscreen();
+  }
+}
+
 // Task elements
 const focusTaskList = document.getElementById('focus-task-list');
 const activeFocusTask = document.getElementById('active-focus-task');
@@ -229,6 +297,18 @@ function startTimer() {
   timerStartBtn.classList.add('hidden');
   timerPauseBtn.classList.remove('hidden');
   
+  // Directly enter fullscreen mode when starting focus mode
+  const section = document.getElementById('focus-section');
+  if (section && !document.fullscreenElement) {
+    if (section.requestFullscreen) section.requestFullscreen();
+    else if (section.webkitRequestFullscreen) section.webkitRequestFullscreen();
+    else if (section.msRequestFullscreen) section.msRequestFullscreen();
+  }
+  
+  if (enableFocusProtectionInput && enableFocusProtectionInput.checked) {
+    activateFocusTracking();
+  }
+  
   timerInterval = setInterval(() => {
     timePassed += 1;
     timeLeft = TIME_LIMIT - timePassed;
@@ -262,6 +342,8 @@ function resetTimer() {
   timerPathRemaining.setAttribute("stroke-dasharray", "283 283");
   timerPauseBtn.classList.add('hidden');
   timerStartBtn.classList.remove('hidden');
+  
+  cleanupFocusTracking();
 }
 
 timerDurationInput.addEventListener('change', () => {
@@ -973,6 +1055,27 @@ store.subscribe(renderFocusTasks);
 store.subscribe(renderSidebarSubjects);
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Focus Mode Enhancement Initializations
+  if (fullscreenToggleBtn) {
+    fullscreenToggleBtn.addEventListener('click', toggleFullscreen);
+  }
+
+  if (focusWarningClose) {
+    focusWarningClose.addEventListener('click', () => {
+      if (focusWarningBanner) focusWarningBanner.classList.add('hidden');
+    });
+  }
+
+  document.addEventListener('fullscreenchange', () => {
+    const isCurrentlyFullscreen = !!document.fullscreenElement;
+    if (fullscreenToggleBtn) {
+      const labelSpan = fullscreenToggleBtn.querySelector('span');
+      if (labelSpan) {
+        labelSpan.textContent = isCurrentlyFullscreen ? 'Exit Fullscreen' : 'Fullscreen';
+      }
+    }
+  });
+
   if (newSubjectColorsEl) {
     SUBJECT_COLORS.forEach(c => {
       const btn = document.createElement('button');
@@ -1040,6 +1143,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   calendarBtn.addEventListener('click', () => {
+    if (focusProtectionActive) handleFocusLoss();
     currentView = 'calendar';
     document.querySelector('.cal-section').classList.remove('hidden');
     document.getElementById('tasks-section').classList.remove('hidden');
@@ -1049,6 +1153,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   allTasksBtn.addEventListener('click', () => {
+    if (focusProtectionActive) handleFocusLoss();
     currentView = 'all-tasks';
     document.querySelector('.cal-section').classList.add('hidden');
     document.getElementById('tasks-section').classList.remove('hidden');
@@ -1058,6 +1163,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   archivedTasksBtn.addEventListener('click', () => {
+    if (focusProtectionActive) handleFocusLoss();
     currentView = 'archived';
     document.querySelector('.cal-section').classList.add('hidden');
     document.getElementById('tasks-section').classList.remove('hidden');

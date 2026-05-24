@@ -4966,3 +4966,159 @@ body {
 @keyframes slideDown {
   to { opacity: 0; transform: translateY(10px); }
 }
+
+/* Focus Mode Enhancement Styles */
+.focus-warning-banner {
+  background-color: rgba(245, 158, 11, 0.1);
+  border: 1px solid var(--color-text-warning, #f59e0b);
+  border-radius: var(--border-radius-md, 8px);
+  padding: 12px 16px;
+  color: var(--color-text-warning, #f59e0b);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto 16px auto;
+  box-sizing: border-box;
+  animation: bannerSlideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.warning-banner-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.warning-banner-text {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  flex: 1;
+}
+
+.warning-banner-close {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.warning-banner-close:hover {
+  opacity: 1;
+}
+
+.focus-stats-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 16px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px dashed var(--color-text-danger, #ef4444);
+  border-radius: var(--border-radius-sm, 6px);
+  margin-top: -8px;
+  animation: bannerFadeIn 0.3s ease-out;
+}
+
+.focus-stat-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.focus-stat-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-danger, #ef4444);
+}
+
+.focus-options-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 600px;
+  margin-top: 4px;
+}
+
+.focus-option-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.focus-option-toggle input[type="checkbox"] {
+  cursor: pointer;
+  accent-color: var(--color-text-primary);
+  width: 14px;
+  height: 14px;
+  margin: 0;
+}
+
+#fullscreen-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  padding: 6px 12px;
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-secondary);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  border-radius: var(--border-radius-md, 8px);
+  transition: all 0.2s ease;
+}
+
+#fullscreen-toggle-btn:hover {
+  background: var(--color-border-tertiary);
+  border-color: var(--color-text-secondary);
+}
+
+/* Fullscreen customization */
+#focus-section:fullscreen {
+  padding: 40px;
+  background: var(--color-background-primary);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow-y: auto;
+}
+
+#focus-section:fullscreen .focus-dashboard,
+#focus-section:fullscreen .focus-task-selector {
+  max-width: 600px;
+  width: 100%;
+}
+
+@keyframes bannerSlideDown {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes bannerFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
